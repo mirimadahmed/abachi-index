@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Container, Row, Col } from "react-bootstrap";
 import Web3 from "web3";
 import abis from './tokenabi'
-import routerAbi from './routerabi'
 import imusdAbi from './imusdabi'
 import gohmAbi from './gohmAbi'
 
@@ -21,17 +20,8 @@ export default class Treasury extends React.Component {
     formatter: new Intl.NumberFormat('en-US', { maximumSignificantDigits: 6 })
   }
 
-  getPrice = (id, amount) => {
-    return axios.get('https://pro-api.coinmarketcap.com/v1/tools/price-conversion', {
-      headers: {
-        'X-CMC_PRO_API_KEY': process.env.REACT_APP_CMC_KEY
-      },
-      params: {
-        'amount': amount,
-        'convert': 'USD',
-        'id': id
-      },
-    })
+  getPrice = () => {
+    return axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD&ids=abachi&order=market_cap_desc&per_page=1&page=1&sparkline=false')
   }
 
   getBalances() {
@@ -89,38 +79,14 @@ export default class Treasury extends React.Component {
   }
 
   componentDidMount() {
+    this.getPrice().then((res) => {
+      this.setState({
+        abiPrice: res.data[0].current_price
+      })
+    })
     this.getBalances();
-
-    // KEEP THIS TO FIND CMC ID of a token
-    // axios.get('https://pro-api.coinmarketcap.com/v1/cryptocurrency/map', {
-    //   headers: {
-    //     'X-CMC_PRO_API_KEY': process.env.REACT_APP_CMC_KEY
-    //   },
-    //   params: {
-    //     'symbol': 'DAI'
-    //   },
-    // }).then((res) => console.log(res.data))
-
-    // AND THEN USE FOLLOWING TO GET THE PRICE
-    // this.getPrice('4943', this.state.stable)
-    //   .then((res) => this.setState({ daiPrice: res.data.data.quote.USD.price }))
-
-    
     
     let web3 = new Web3(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_MATIC_KEY}`);
-
-    // Get ABI price
-    const amountIn = 1 * Math.pow(10, 9);
-    const path = ["0x6d5f5317308c6fe7d6ce16930353a8dfd92ba4d7", "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"]
-    const routerContract = new web3.eth.Contract(routerAbi, "0x1b02da8cb0d097eb8d57a175b88c7d8b47997506");
-
-    routerContract.methods.getAmountsOut(amountIn, path).call()
-      .then((res) => {
-        this.setState({
-          abiPrice: parseFloat(Web3.utils.fromWei(res[1]))
-        })
-      });
-
     
     // Get LP reserves for DAI and ABI
     const lpContract = new web3.eth.Contract(abis, "0x81fd1d6d336c3a8a0596badc664ee01269551130");
