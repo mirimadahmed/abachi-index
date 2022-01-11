@@ -13,6 +13,8 @@ export default class Treasury extends React.Component {
     index: 0,
     abi: 0,
     abiPrice: 0,
+    ohmPrice: 0,
+    mtaPrice: 0,
     stable: 0,
     mta: 0,
     lp: 0,
@@ -20,8 +22,8 @@ export default class Treasury extends React.Component {
     formatter: new Intl.NumberFormat('en-US', { maximumSignificantDigits: 6 })
   }
 
-  getPrice = () => {
-    return axios.get('https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD&ids=abachi&order=market_cap_desc&per_page=1&page=1&sparkline=false')
+  getPrice = (coin) => {
+    return axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD&ids=${coin}&order=market_cap_desc&per_page=1&page=1&sparkline=false`)
   }
 
   getBalances() {
@@ -79,9 +81,19 @@ export default class Treasury extends React.Component {
   }
 
   componentDidMount() {
-    this.getPrice().then((res) => {
+    this.getPrice('abachi').then((res) => {
       this.setState({
         abiPrice: res.data[0].current_price
+      })
+    })
+    this.getPrice('meta').then((res) => {
+      this.setState({
+        mtaPrice: res.data[0].current_price
+      })
+    })
+    this.getPrice('olympus').then((res) => {
+      this.setState({
+        ohmPrice: res.data[0].current_price
       })
     })
     this.getBalances();
@@ -138,7 +150,11 @@ export default class Treasury extends React.Component {
                 <p>
                   ${
                   this.state.formatter.format(
-                    (this.state.stable + this.state.lp + (this.state.abi * this.state.abiPrice))
+                    (this.state.stable + this.state.lp + 
+                      (this.state.abi * this.state.abiPrice) +
+                      (this.state.mta * this.state.mtaPrice) +
+                      (this.state.gohm * this.state.index * this.state.ohmPrice)
+                    )
                   )}
                 </p>
               </Col>
@@ -150,10 +166,12 @@ export default class Treasury extends React.Component {
           <Col className="Element shadow">
             <h6>OHM</h6>
             <p>{this.state.formatter.format(this.state.gohm * this.state.index)}</p>
+            <p>${this.state.formatter.format(this.state.gohm * this.state.index * this.state.ohmPrice)}</p>
           </Col>
           <Col className="Element shadow">
             <h6>MTA</h6>
             <p>{this.state.formatter.format(this.state.mta)}</p>
+            <p>${this.state.formatter.format(this.state.mta * this.state.mtaPrice)}</p>
           </Col>
           <Col className="Element shadow">
             <h6>Stable</h6>
