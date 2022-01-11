@@ -1,10 +1,16 @@
 import React from "react";
 import axios from 'axios';
-import { Container, Row, Col, Div, Text } from "atomize";
+import { Container, Row, Col, Div, Text, Image } from "atomize";
 import Web3 from "web3";
 import abis from './tokenabi'
 import imusdAbi from './imusdabi'
 import gohmAbi from './gohmAbi'
+import abachiLogo from './abi-black-logo.png'
+import ohmlogo from './ohm.svg'
+import stablelogo from './stable.svg'
+import mslogo from './mstable.png'
+import dailogo from './dai.svg'
+import abilogo from './abachi_token.png'
 
 export default class Treasury extends React.Component {
   state = {
@@ -18,7 +24,6 @@ export default class Treasury extends React.Component {
     stable: 0,
     mta: 0,
     lp: 0,
-    core: 0,
     formatter: new Intl.NumberFormat('en-US', { maximumSignificantDigits: 6 })
   }
 
@@ -87,7 +92,7 @@ export default class Treasury extends React.Component {
           else if ([usdt, usdc].includes(element.contractAddress)) {
             let balance = this.state.stable + Web3.utils.hexToNumberString(element.tokenBalance) * Math.pow(10, -6)
             this.setState({ stable: balance })
-          } else if(imusdEth === element.contractAddress) {
+          } else if (imusdEth === element.contractAddress) {
             let balance = Web3.utils.hexToNumberString(element.tokenBalance)
             // Get mUSD balance - ETH
             let web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_ETH_KEY}`);
@@ -155,10 +160,13 @@ export default class Treasury extends React.Component {
   render() {
     return (
       <Container p={{ xs: '1rem', md: '4rem' }}>
+        <Div textAlign="center">
+          <Image alt="abachi-logo" src={abachiLogo} w="50%" m="2rem" />
+        </Div>
         <Row>
           <Col>
             <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
-              <Text textSize="title" textWeight="500" textAlign="center">
+              <Text textSize="display1" textWeight="600" textAlign="center">
                 ${
                   this.state.formatter.format(
                     (this.state.stable + this.state.lp +
@@ -168,7 +176,7 @@ export default class Treasury extends React.Component {
                     )
                   )}
               </Text>
-              <Text textSize="caption" textColor="light" textAlign="center">
+              <Text textSize="paragraph" textColor="light" textAlign="center">
                 Total Treasury
               </Text>
             </Div>
@@ -177,6 +185,7 @@ export default class Treasury extends React.Component {
         <Row>
           <Col>
             <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Image alt="ohm-logo" src={ohmlogo} w="30%" />
               <Text textSize="title" textWeight="500">
                 ${this.state.formatter.format(this.state.gohm * this.state.index * this.state.ohmPrice)}
               </Text>
@@ -187,6 +196,7 @@ export default class Treasury extends React.Component {
           </Col>
           <Col>
             <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Image alt="mstable-logo" src={mslogo} w="30%" />
               <Text textSize="title" textWeight="500">
                 ${this.state.formatter.format(this.state.mta * this.state.mtaPrice)}
               </Text>
@@ -197,6 +207,7 @@ export default class Treasury extends React.Component {
           </Col>
           <Col>
             <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Image alt="stable-logo" src={stablelogo} w="45%" />
               <Text textSize="title" textWeight="500">
                 ${this.state.formatter.format(this.state.stable)}
               </Text>
@@ -207,6 +218,8 @@ export default class Treasury extends React.Component {
           </Col>
           <Col>
             <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Image alt="dai-logo" src={dailogo} w="30%" />
+              <Image alt="dai-logo" src={abilogo} w="30%" m={{ l: '-10px'}} />
               <Text textSize="title" textWeight="500">
                 ${this.state.formatter.format(this.state.lp)}
               </Text>
@@ -217,21 +230,12 @@ export default class Treasury extends React.Component {
           </Col>
           <Col>
             <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Image alt="abi-token-logo" src={abilogo} w="30%" />
               <Text textSize="title" textWeight="500">
                 ${this.state.formatter.format(this.state.abiPrice * this.state.abi)}
               </Text>
               <Text textSize="caption" textColor="light">
                 {this.state.abi} ABI
-              </Text>
-            </Div>
-          </Col>
-          <Col>
-            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
-              <Text textSize="title" textWeight="500">
-                ${this.state.formatter.format(this.state.core)}
-              </Text>
-              <Text textSize="caption" textColor="light">
-                Core Fund
               </Text>
             </Div>
           </Col>
