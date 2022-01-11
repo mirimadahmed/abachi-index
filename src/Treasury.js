@@ -1,6 +1,6 @@
 import React from "react";
 import axios from 'axios';
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Div, Text } from "atomize";
 import Web3 from "web3";
 import abis from './tokenabi'
 import imusdAbi from './imusdabi'
@@ -51,7 +51,7 @@ export default class Treasury extends React.Component {
             this.setState({ stable: balance })
           } else if (element.contractAddress === imusd) {
             let balance = Web3.utils.hexToNumberString(element.tokenBalance)
-            // Get mUSD balance - TODO
+            // Get mUSD balance - MATIC
             let web3 = new Web3(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_MATIC_KEY}`);
             const imUsdContract = new web3.eth.Contract(imusdAbi, "0x5290ad3d83476ca6a2b178cd9727ee1ef72432af")
             imUsdContract.methods.creditsToUnderlying(balance).call()
@@ -68,10 +68,11 @@ export default class Treasury extends React.Component {
     const usdt = "0xdac17f958d2ee523a2206206994597c13d831ec7"
     const usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
     const mta = "0xa3BeD4E1c75D00fa6f4E5E6922DB7261B5E9AcD2"
+    const imusdEth = "0x78befca7de27d07dc6e71da295cc2946681a6c7b"
     const paramsEth = {
       "jsonrpc": "2.0",
       "method": "alchemy_getTokenBalances",
-      "params": [ethAccount, [usdt, usdc, mta]],
+      "params": [ethAccount, [usdt, usdc, mta, imusdEth]],
       "id": 42
     }
     axios.post(`https://eth-mainnet.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_ETH_KEY}`, paramsEth)
@@ -86,6 +87,16 @@ export default class Treasury extends React.Component {
           else if ([usdt, usdc].includes(element.contractAddress)) {
             let balance = this.state.stable + Web3.utils.hexToNumberString(element.tokenBalance) * Math.pow(10, -6)
             this.setState({ stable: balance })
+          } else if(imusdEth === element.contractAddress) {
+            let balance = Web3.utils.hexToNumberString(element.tokenBalance)
+            // Get mUSD balance - ETH
+            let web3 = new Web3(`https://eth-mainnet.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_ETH_KEY}`);
+            const imUsdContract = new web3.eth.Contract(imusdAbi, "0x30647a72dc82d7fbb1123ea74716ab8a317eac19")
+            imUsdContract.methods.creditsToUnderlying(balance).call()
+              .then((res) => {
+                let newBalance = this.state.stable + res * Math.pow(10, -18)
+                this.setState({ stable: newBalance })
+              });
           }
         });
       })
@@ -143,59 +154,89 @@ export default class Treasury extends React.Component {
 
   render() {
     return (
-      <Container fluid style={{
-        padding: '50px'
-      }}>
+      <Container p={{ xs: '1rem', md: '4rem' }}>
         <Row>
           <Col>
-            <Row>
-              <Col className="Element shadow">
-                <h6>Total Treasury</h6>
-                <p>
-                  ${
-                    this.state.formatter.format(
-                      (this.state.stable + this.state.lp +
-                        (this.state.abi * this.state.abiPrice) +
-                        (this.state.mta * this.state.mtaPrice) +
-                        (this.state.gohm * this.state.index * this.state.ohmPrice)
-                      )
-                    )}
-                </p>
-              </Col>
-            </Row>
+            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Text textSize="title" textWeight="500" textAlign="center">
+                ${
+                  this.state.formatter.format(
+                    (this.state.stable + this.state.lp +
+                      (this.state.abi * this.state.abiPrice) +
+                      (this.state.mta * this.state.mtaPrice) +
+                      (this.state.gohm * this.state.index * this.state.ohmPrice)
+                    )
+                  )}
+              </Text>
+              <Text textSize="caption" textColor="light" textAlign="center">
+                Total Treasury
+              </Text>
+            </Div>
           </Col>
         </Row>
-
         <Row>
-          <Col className="Element shadow">
-            <h6>OHM</h6>
-            <p>{this.state.formatter.format(this.state.gohm * this.state.index)}</p>
-            <p>${this.state.formatter.format(this.state.gohm * this.state.index * this.state.ohmPrice)}</p>
+          <Col>
+            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Text textSize="title" textWeight="500">
+                ${this.state.formatter.format(this.state.gohm * this.state.index * this.state.ohmPrice)}
+              </Text>
+              <Text textSize="caption" textColor="light">
+                {this.state.formatter.format(this.state.gohm * this.state.index)} OHM
+              </Text>
+            </Div>
           </Col>
-          <Col className="Element shadow">
-            <h6>MTA</h6>
-            <p>{this.state.formatter.format(this.state.mta)}</p>
-            <p>${this.state.formatter.format(this.state.mta * this.state.mtaPrice)}</p>
+          <Col>
+            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Text textSize="title" textWeight="500">
+                ${this.state.formatter.format(this.state.mta * this.state.mtaPrice)}
+              </Text>
+              <Text textSize="caption" textColor="light">
+                {this.state.formatter.format(this.state.mta)} MTA
+              </Text>
+            </Div>
           </Col>
-          <Col className="Element shadow">
-            <h6>Stable</h6>
-            <p>${this.state.formatter.format(this.state.stable)}</p>
+          <Col>
+            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Text textSize="title" textWeight="500">
+                ${this.state.formatter.format(this.state.stable)}
+              </Text>
+              <Text textSize="caption" textColor="light">
+                Stable
+              </Text>
+            </Div>
           </Col>
-          <Col className="Element shadow">
-            <h6>LP</h6>
-            <p>${this.state.formatter.format(this.state.lp)}</p>
+          <Col>
+            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Text textSize="title" textWeight="500">
+                ${this.state.formatter.format(this.state.lp)}
+              </Text>
+              <Text textSize="caption" textColor="light">
+                LP
+              </Text>
+            </Div>
           </Col>
-          <Col className="Element shadow">
-            <h6>ABI</h6>
-            <p>{this.state.abi}</p>
-            <p>${this.state.formatter.format(this.state.abiPrice * this.state.abi)}</p>
+          <Col>
+            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Text textSize="title" textWeight="500">
+                ${this.state.formatter.format(this.state.abiPrice * this.state.abi)}
+              </Text>
+              <Text textSize="caption" textColor="light">
+                {this.state.abi} ABI
+              </Text>
+            </Div>
           </Col>
-          <Col className="Element shadow">
-            <h6>Core Fund</h6>
-            <p>{this.state.formatter.format(this.state.core)}</p>
+          <Col>
+            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+              <Text textSize="title" textWeight="500">
+                ${this.state.formatter.format(this.state.core)}
+              </Text>
+              <Text textSize="caption" textColor="light">
+                Core Fund
+              </Text>
+            </Div>
           </Col>
         </Row>
-      </Container>
+      </Container >
     );
   }
 }
