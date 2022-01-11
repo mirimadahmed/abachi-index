@@ -30,11 +30,13 @@ export default class Treasury extends React.Component {
     const abi = "0x6d5f5317308c6fe7d6ce16930353a8dfd92ba4d7"
     const dai = "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"
     const maticAccount = process.env.REACT_APP_MATIC_ADDRESS
+    const imusd = "0x32aba856dc5ffd5a56bcd182b13380e5c855aa29"
+
     // Get Matic Balance
     const params = {
       "jsonrpc": "2.0",
       "method": "alchemy_getTokenBalances",
-      "params": [maticAccount, [abi, dai]],
+      "params": [maticAccount, [abi, dai, imusd]],
       "id": 42
     }
     axios.post(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_MATIC_KEY}`, params)
@@ -47,7 +49,16 @@ export default class Treasury extends React.Component {
           else if (element.contractAddress === dai) {
             let balance = this.state.stable + parseFloat(Web3.utils.fromWei(Web3.utils.hexToNumberString(element.tokenBalance)))
             this.setState({ stable: balance })
-            
+          } else if (element.contractAddress === imusd) {
+            let balance = Web3.utils.hexToNumberString(element.tokenBalance)
+            // Get mUSD balance - TODO
+            let web3 = new Web3(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_MATIC_KEY}`);
+            const imUsdContract = new web3.eth.Contract(imusdAbi, "0x5290ad3d83476ca6a2b178cd9727ee1ef72432af")
+            imUsdContract.methods.creditsToUnderlying(balance).call()
+              .then((res) => {
+                let newBalance = this.state.stable + res * Math.pow(10, -18)
+                this.setState({ stable: newBalance })
+              });
           }
         });
       })
@@ -97,9 +108,9 @@ export default class Treasury extends React.Component {
       })
     })
     this.getBalances();
-    
+
     let web3 = new Web3(`https://polygon-mainnet.g.alchemy.com/v2/${process.env.REACT_APP_ALCHEMY_MATIC_KEY}`);
-    
+
     // Get LP reserves for DAI and ABI
     const lpContract = new web3.eth.Contract(abis, "0x81fd1d6d336c3a8a0596badc664ee01269551130");
 
@@ -113,28 +124,21 @@ export default class Treasury extends React.Component {
         });
       });
 
-
-    // Get mUSD balance - TODO
-    const imUsdContract = new web3.eth.Contract(imusdAbi, "0x5290ad3d83476ca6a2b178cd9727ee1ef72432af")
-    imUsdContract.methods.balanceOfUnderlying("0x4f33Ff9A7910d04c7FC77563090ae106899988Aa").call()
-    .then((res) => {
-    });
-
     // Get ohm balance
     web3.eth.Contract.setProvider(`https://eth-mainnet.alchemyapi.io/v2/${process.env.REACT_APP_ALCHEMY_ETH_KEY}`)
     const ohmContract = new web3.eth.Contract(gohmAbi, "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f")
     ohmContract.methods.balanceOf(process.env.REACT_APP_ETH_ADDRESS).call()
-    .then((res) => {
-      this.setState({
-        gohm: parseFloat(Web3.utils.fromWei(res))
-      })
-    });
+      .then((res) => {
+        this.setState({
+          gohm: parseFloat(Web3.utils.fromWei(res))
+        })
+      });
     ohmContract.methods.index().call()
-    .then((res) => {
-      this.setState({
-        index: parseFloat(Web3.utils.fromWei(res, 'GWei'))
+      .then((res) => {
+        this.setState({
+          index: parseFloat(Web3.utils.fromWei(res, 'GWei'))
+        })
       })
-    })
   }
 
   render() {
@@ -149,13 +153,13 @@ export default class Treasury extends React.Component {
                 <h6>Total Treasury</h6>
                 <p>
                   ${
-                  this.state.formatter.format(
-                    (this.state.stable + this.state.lp + 
-                      (this.state.abi * this.state.abiPrice) +
-                      (this.state.mta * this.state.mtaPrice) +
-                      (this.state.gohm * this.state.index * this.state.ohmPrice)
-                    )
-                  )}
+                    this.state.formatter.format(
+                      (this.state.stable + this.state.lp +
+                        (this.state.abi * this.state.abiPrice) +
+                        (this.state.mta * this.state.mtaPrice) +
+                        (this.state.gohm * this.state.index * this.state.ohmPrice)
+                      )
+                    )}
                 </p>
               </Col>
             </Row>
