@@ -10,6 +10,7 @@ import ohmlogo from './ohm.svg'
 import stablelogo from './stable.svg'
 import mslogo from './mstable.png'
 import dailogo from './dai.svg'
+import treasuryLogo from './treasury.svg'
 import abilogo from './abachi_token.png'
 
 export default class Treasury extends React.Component {
@@ -159,88 +160,97 @@ export default class Treasury extends React.Component {
 
   render() {
     return (
-      <Container p={{ xs: '1rem', md: '4rem' }}>
-        <Div textAlign="center">
-          <Image alt="abachi-logo" src={abachiLogo} w="50%" m="2rem" />
+      <Div w="100%">
+        <Div className="TopArea">
+          <Div className="NavBar">
+            <Image alt="abachi-logo" src={abachiLogo} w="15vh" />
+          </Div>
+          <Row className="TotalTreasury">
+            <Col>
+              <Div textAlign="center" >
+                <Image alt="stable-logo" src={treasuryLogo} w="70px" />
+              </Div>
+              <Div textAlign="center">
+                <Text className="Heading" textSize="45px">
+                  $ {
+                    this.state.formatter.format(
+                      (this.state.stable + this.state.lp +
+                        (this.state.abi * this.state.abiPrice) +
+                        (this.state.mta * this.state.mtaPrice) +
+                        (this.state.gohm * this.state.index * this.state.ohmPrice)
+                      )
+                    )}
+                </Text>
+                <Text className="Number" m={{ t: '12px' }}>
+                  Total Treasury
+                </Text>
+              </Div>
+            </Col>
+          </Row>
         </Div>
-        <Row>
-          <Col>
-            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
-              <Text textSize="display1" textWeight="600" textAlign="center">
-                ${
-                  this.state.formatter.format(
-                    (this.state.stable + this.state.lp +
-                      (this.state.abi * this.state.abiPrice) +
-                      (this.state.mta * this.state.mtaPrice) +
-                      (this.state.gohm * this.state.index * this.state.ohmPrice)
-                    )
-                  )}
-              </Text>
-              <Text textSize="paragraph" textColor="light" textAlign="center">
-                Total Treasury
-              </Text>
-            </Div>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
-              <Image alt="ohm-logo" src={ohmlogo} w="30%" />
-              <Text textSize="title" textWeight="500">
-                ${this.state.formatter.format(this.state.gohm * this.state.index * this.state.ohmPrice)}
-              </Text>
-              <Text textSize="caption" textColor="light">
-                {this.state.formatter.format(this.state.gohm * this.state.index)} OHM
-              </Text>
-            </Div>
-          </Col>
-          <Col>
-            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
-              <Image alt="mstable-logo" src={mslogo} w="30%" />
-              <Text textSize="title" textWeight="500">
-                ${this.state.formatter.format(this.state.mta * this.state.mtaPrice)}
-              </Text>
-              <Text textSize="caption" textColor="light">
-                {this.state.formatter.format(this.state.mta)} MTA
-              </Text>
-            </Div>
-          </Col>
-          <Col>
-            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
-              <Image alt="stable-logo" src={stablelogo} w="45%" />
-              <Text textSize="title" textWeight="500">
-                ${this.state.formatter.format(this.state.stable)}
-              </Text>
-              <Text textSize="caption" textColor="light">
-                Stable
-              </Text>
-            </Div>
-          </Col>
-          <Col>
-            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
-              <Image alt="dai-logo" src={dailogo} w="30%" />
-              <Image alt="dai-logo" src={abilogo} w="30%" m={{ l: '-10px'}} />
-              <Text textSize="title" textWeight="500">
-                ${this.state.formatter.format(this.state.lp)}
-              </Text>
-              <Text textSize="caption" textColor="light">
-                LP
-              </Text>
-            </Div>
-          </Col>
-          <Col>
-            <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
-              <Image alt="abi-token-logo" src={abilogo} w="30%" />
-              <Text textSize="title" textWeight="500">
-                ${this.state.formatter.format(this.state.abiPrice * this.state.abi)}
-              </Text>
-              <Text textSize="caption" textColor="light">
-                {this.state.abi} ABI
-              </Text>
-            </Div>
-          </Col>
-        </Row>
-      </Container >
+        <Div className="BottomArea">
+          <Container>
+            <Row>
+              <Col size={{ xs: 10, md: 3, lg: 2 }}>
+                <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+                  <Image alt="ohm-logo" src={ohmlogo} w="30%" />
+                  <Text className="Heading">
+                    ${this.state.formatter.format(this.state.gohm * this.state.index * this.state.ohmPrice)}
+                  </Text>
+                  <Text>
+                    {this.state.formatter.format(this.state.gohm * this.state.index)} OHM
+                  </Text>
+                </Div>
+              </Col>
+              <Col size={{ xs: 10, md: 3,lg: 2 }}>
+                <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+                  <Image alt="mstable-logo" src={mslogo} w="30%" />
+                  <Text className="Heading">
+                    ${this.state.formatter.format(this.state.mta * this.state.mtaPrice)}
+                  </Text>
+                  <Text>
+                    {this.state.formatter.format(this.state.mta)} MTA
+                  </Text>
+                </Div>
+              </Col>
+              <Col size={{ xs: 10, md: 3, lg: 2 }}>
+                <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+                  <Image alt="stable-logo" src={stablelogo} w="45%" />
+                  <Text className="Heading">
+                    ${this.state.formatter.format(this.state.stable)}
+                  </Text>
+                  <Text>
+                    Stable
+                  </Text>
+                </Div>
+              </Col>
+              <Col size={{ xs: 10, md: 3, lg: 2 }}>
+                <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+                  <Image alt="dai-logo" src={dailogo} w="30%" />
+                  <Image alt="dai-logo" src={abilogo} w="30%" m={{ l: '-10px' }} />
+                  <Text className="Heading">
+                    ${this.state.formatter.format(this.state.lp)}
+                  </Text>
+                  <Text>
+                    LP
+                  </Text>
+                </Div>
+              </Col>
+              <Col size={{ xs: 10, md: 3, lg: 2 }}>
+                <Div bg="white" shadow="5" rounded="xl" m={{ b: "1rem" }} p="1.5rem">
+                  <Image alt="abi-token-logo" src={abilogo} w="30%" />
+                  <Text className="Heading">
+                    ${this.state.formatter.format(this.state.abiPrice * this.state.abi)}
+                  </Text>
+                  <Text>
+                    {this.state.abi} ABI
+                  </Text>
+                </Div>
+              </Col>
+            </Row>
+          </Container>
+        </Div>
+      </Div>
     );
   }
 }

@@ -1,3 +1,55 @@
-body {
-  background: #f7f1e3;
+.TopArea {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0px 4px 6px rgba(225, 225, 225, 0.18);
+  backdrop-filter: blur(15px);
+}
+
+.NavBar {
+  padding-left: 5vw;
+  padding-top: 22px;
+  padding-bottom: 20px;
+  border-bottom: 0.51px solid;
+  border-image-source: linear-gradient(
+    90deg,
+    rgba(182, 178, 237, 0.1) 0.64%,
+    #fba994 44.65%,
+    #b6b2ed 57.93%,
+    rgba(182, 178, 237, 0.2) 98.94%
+  );
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0px 4px 6px rgba(225, 225, 225, 0.18);
+  backdrop-filter: blur(15px);
+}
+
+.TotalTreasury {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0px 4px 6px rgba(225, 225, 225, 0.18);
+  padding: 5vw;
+}
+
+.BottomArea {
+  padding: 5vh;
+  background: linear-gradient(
+    238.03deg,
+    rgba(182, 178, 237, 0.05) 13.04%,
+    #f9f9fb 27.3%,
+    rgba(255, 195, 184, 0.17) 45.81%,
+    rgba(239, 202, 220, 0.53) 57.13%,
+    rgba(217, 214, 249, 0.16) 70.99%,
+    #f9f9fb 87.75%
+  );
+  min-height: 60vh;
+}
+
+.Heading {
+  font-family: 'Rubik';
+  color: #0e1a45;
+  font-weight: 500;
+}
+
+.Number {
+  font-family: Poppins;
+  color: #7f879e;
+  font-weight: 400;
+  font-size: 20px;
 }

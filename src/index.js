@@ -9,9 +9,14 @@ import { Client as Styletron } from "styletron-engine-atomic";
 const debug =
   process.env.NODE_ENV === "production" ? void 0 : new DebugEngine();
 const engine = new Styletron();
+const theme = {
+  grid: {
+    colCount: 10,
+  }
+};
 
 ReactDOM.render(
-  <ThemeProvider>
+  <ThemeProvider theme={theme}>
     <StyleReset />
     <React.StrictMode>
       <StyletronProvider value={engine} debug={debug} debugAfterHydration>
